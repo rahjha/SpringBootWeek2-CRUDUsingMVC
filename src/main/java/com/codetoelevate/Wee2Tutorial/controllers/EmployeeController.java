@@ -2,6 +2,7 @@ package com.codetoelevate.Wee2Tutorial.controllers;
 
 import com.codetoelevate.Wee2Tutorial.dto.EmployeeDto;
 import com.codetoelevate.Wee2Tutorial.entities.EmployeeEntity;
+import com.codetoelevate.Wee2Tutorial.exceptions.ResourceNotFoundException;
 import com.codetoelevate.Wee2Tutorial.repositories.EmployeeRepository;
 import com.codetoelevate.Wee2Tutorial.services.EmployeeService;
 import jakarta.annotation.PostConstruct;
@@ -29,7 +30,7 @@ public class EmployeeController {
         Optional<EmployeeDto> employeeDto = employeeService.getEmployeeById(id);
         return employeeDto
                 .map(employeeDto1 -> ResponseEntity.ok(employeeDto1))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(()->new ResourceNotFoundException("Employee not found with id :"+id));
     }
 
     @GetMapping

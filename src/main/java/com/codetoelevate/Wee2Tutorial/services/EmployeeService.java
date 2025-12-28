@@ -2,6 +2,7 @@ package com.codetoelevate.Wee2Tutorial.services;
 
 import com.codetoelevate.Wee2Tutorial.dto.EmployeeDto;
 import com.codetoelevate.Wee2Tutorial.entities.EmployeeEntity;
+import com.codetoelevate.Wee2Tutorial.exceptions.ResourceNotFoundException;
 import com.codetoelevate.Wee2Tutorial.repositories.EmployeeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.util.ReflectionUtils;
@@ -47,28 +48,20 @@ public class EmployeeService {
     //if the employeeId is not present then will create a new employee, and if already present then update the employee.
     public EmployeeDto updateEmployeeById(Long employeeId, EmployeeDto employeeDto) {
         EmployeeEntity employeeEntity = modelMapper.map(employeeDto, EmployeeEntity.class);
-        boolean exist = isExistByEmployeeId(employeeId);
-        if(exist) {
-            employeeEntity.setId(employeeId);
-            EmployeeEntity savedEmployee = employeeRepository.save(employeeEntity);
-            return modelMapper.map(savedEmployee, EmployeeDto.class);
-        }
-        else{
-            EmployeeEntity savedEmployee = employeeRepository.save(employeeEntity);
-            return modelMapper.map(savedEmployee, EmployeeDto.class);
-        }
+        isExistByEmployeeId(employeeId);
+        employeeEntity.setId(employeeId);
+        EmployeeEntity savedEmployee = employeeRepository.save(employeeEntity);
+        return modelMapper.map(savedEmployee, EmployeeDto.class);
     }
 
     public boolean deleteEmployeeById(Long employeeId) {
-        boolean exists = isExistByEmployeeId(employeeId);
-        if(!exists) return false;
+        isExistByEmployeeId(employeeId);
         employeeRepository.deleteById(employeeId);
         return true;
     }
 
     public EmployeeDto updatePartialEmployeeById(Long employeeId, Map<String, Object> updates) {
-        boolean exist = isExistByEmployeeId(employeeId);
-        if(!exist) return null;
+        isExistByEmployeeId(employeeId);
         EmployeeEntity employeeEntity = employeeRepository.findById(employeeId).get();
         updates.forEach((field, value)->{
                 Field fieldToBeUpdated = ReflectionUtils.getRequiredField(EmployeeEntity.class, field);
@@ -79,6 +72,8 @@ public class EmployeeService {
     }
 
     public boolean isExistByEmployeeId(Long employeeId){
-        return employeeRepository.existsById(employeeId);
+        boolean exist = employeeRepository.existsById(employeeId);
+        if(!exist) throw new ResourceNotFoundException("Employee not found with id :"+employeeId);
+        return true;
     }
 }
