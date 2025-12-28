@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,9 +24,10 @@ public class EmployeeService {
         this.modelMapper = modelMapper;
     }
 
-    public EmployeeDto getEmployeeById(Long id) {
-        EmployeeEntity employeeEntity = employeeRepository.findById(id).orElse(null);
-        return modelMapper.map(employeeEntity, EmployeeDto.class);
+    public Optional<EmployeeDto> getEmployeeById(Long id) {
+        Optional<EmployeeEntity> employeeEntity = employeeRepository.findById(id);
+        return employeeEntity
+                .map(employeeEntity1 -> modelMapper.map(employeeEntity1, EmployeeDto.class));
     }
 
     public List<EmployeeDto> getAllEmployee() {
@@ -45,9 +47,16 @@ public class EmployeeService {
     //if the employeeId is not present then will create a new employee, and if already present then update the employee.
     public EmployeeDto updateEmployeeById(Long employeeId, EmployeeDto employeeDto) {
         EmployeeEntity employeeEntity = modelMapper.map(employeeDto, EmployeeEntity.class);
-        employeeEntity.setId(employeeId);
-        EmployeeEntity updatedEmployee = employeeRepository.save(employeeEntity);
-        return modelMapper.map(updatedEmployee, EmployeeDto.class);
+        boolean exist = isExistByEmployeeId(employeeId);
+        if(exist) {
+            employeeEntity.setId(employeeId);
+            EmployeeEntity savedEmployee = employeeRepository.save(employeeEntity);
+            return modelMapper.map(savedEmployee, EmployeeDto.class);
+        }
+        else{
+            EmployeeEntity savedEmployee = employeeRepository.save(employeeEntity);
+            return modelMapper.map(savedEmployee, EmployeeDto.class);
+        }
     }
 
     public boolean deleteEmployeeById(Long employeeId) {

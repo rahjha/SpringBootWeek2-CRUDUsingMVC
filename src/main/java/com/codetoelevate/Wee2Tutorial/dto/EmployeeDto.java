@@ -1,4 +1,5 @@
 package com.codetoelevate.Wee2Tutorial.dto;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,5 +14,6 @@ public class EmployeeDto {
     String firstName;
     String lastName;
     String emailId;
+    @JsonProperty("isAdmin")
     boolean isAdmin;
 }

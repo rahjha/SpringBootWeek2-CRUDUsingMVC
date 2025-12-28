@@ -1,6 +1,7 @@
 package com.codetoelevate.Wee2Tutorial.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ public class EmployeeEntity {
     private String firstName;
     private String lastName;
     private String emailId;
+    @JsonProperty("isAdmin")
     private boolean isAdmin;
 
 }
