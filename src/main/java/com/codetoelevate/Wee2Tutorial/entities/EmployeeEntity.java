@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 @Getter
 @Setter
@@ -22,6 +24,10 @@ public class EmployeeEntity {
     private String firstName;
     private String lastName;
     private String emailId;
+    private Integer age;
+    private LocalDate dateOfJoining;
+    private String role;
+    private Double salary;
     @JsonProperty("isAdmin")
     private boolean isAdmin;
 
